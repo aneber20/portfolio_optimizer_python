@@ -5,7 +5,15 @@ import analytics
 app = Flask(__name__)
 @app.route('/')
 def index():
-    return "Welcome to the Stock Web App!"
+    return """
+    <h1>Welcome to the Stock Web App!</h1>
+    <p>Use the following endpoints to interact with the API:</p>
+    <ul>
+        <li><strong>GET /add/&lt;ticker&gt;/&lt;amount&gt;</strong> - Add a ticker to the watchlist with the specified amount.</li>
+        <li><strong>GET /watchlist</strong> - Retrieve the current watchlist.</li>
+        <li><strong>GET /volatility</strong> - Calculate and retrieve the portfolio volatility.</li>
+    </ul>
+    """
 
 # Store list of tickers, dollars held of that ticker
 holdings = {}
@@ -42,6 +50,18 @@ def watchlist():
 @app.route('/volatility')
 def volatility():
     return(analytics.calculate_portfolio_volatility(holdings))
+
+@app.route('/pe_ratio')
+def pe_ratio():
+    return(analytics.calculate_portfolio_pe_ratio(holdings))
+
+@app.route('/52_week_return')
+def return_52_week():
+    return(analytics.calculate_52_week_return(holdings))
+
+@app.route('/sharpe_ratio')
+def sharpe_ratio():
+    return(analytics.calculate_sharpe_ratio(holdings))
 
 # Run the app
 if __name__ == '__main__':
