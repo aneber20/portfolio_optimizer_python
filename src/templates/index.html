@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Portfolio Optimizer</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>Portfolio Optimizer</h1>
+        <form id="add-stock-form">
+            <label for="ticker">Stock Ticker:</label>
+            <input type="text" id="ticker" name="ticker" required style="text-transform:uppercase;" maxlength="8">
+            <label for="amount">Amount ($):</label>
+            <input type="number" id="amount" name="amount" required min="1" step="any">
+            <button type="submit">Add to Portfolio</button>
+        </form>
+        <div id="message" style="margin-top:1rem;"></div>
+        <div class="footer">
+            &copy; {{ 2025 }} Portfolio Optimizer
+        </div>
+    </div>
+    <script>
+        document.getElementById('add-stock-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const ticker = document.getElementById('ticker').value.trim();
+            const amount = document.getElementById('amount').value.trim();
+            const messageDiv = document.getElementById('message');
+            messageDiv.textContent = "Adding...";
+            
+            try {
+                const response = await fetch(`/add/${ticker}/${amount}`);
+                let data;
+                
+                try {
+                    data = await response.json();
+                } catch (parseError) {
+                    console.error('JSON Parse Error:', parseError);
+                    messageDiv.innerHTML = `
+                        <div style="color: red">
+                            <strong>Error:</strong><br>
+                            Server returned invalid JSON response
+                        </div>
+                    `;
+                    return;
+                }
+                
+                if (!response.ok) {
+                    messageDiv.innerHTML = `
+                        <div style="color: red">
+                            <strong>Error (${response.status}):</strong><br>
+                            ${data.error || 'Unknown error occurred'}
+                        </div>
+                    `;
+                    console.error('Error details:', data);
+                    return;
+                }
+                
+                messageDiv.innerHTML = `
+                    <div style="color: green">
+                        <strong>Success:</strong><br>
+                        ${data.message}
+                    </div>
+                `;
+                
+                console.log('Full response:', data);
+                
+            } catch (err) {
+                messageDiv.innerHTML = `
+                    <div style="color: red">
+                        <strong>Error:</strong><br>
+                        ${err.message}<br>
+                        <small>Check browser console for more details</small>
+                    </div>
+                `;
+                console.error('Network error:', err);
+            }
+        });
+    </script>
+</body>
+</html>
