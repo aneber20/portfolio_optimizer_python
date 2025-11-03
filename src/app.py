@@ -94,7 +94,7 @@ if st.session_state.get("show_analytics", False) and st.session_state.holdings:
         f"""
         <div style="display: flex; justify-content: center; align-items: center; gap: 40px; margin-bottom: 20px;">
             <div style="text-align: center;">
-                <span style="font-size: 40px; font-weight: bold; color: #1f77b4;">{sp_returns[period]*100:.2f}%</span><br>
+                <span style="font-size: 40px; font-weight: bold; color: #6f03fc;">{sp_returns[period]*100:.2f}%</span><br>
                 <span style="font-size: 16px;">S&amp;P 500 Return</span>
             </div>
             <div style="text-align: center;">
@@ -106,23 +106,33 @@ if st.session_state.get("show_analytics", False) and st.session_state.holdings:
         unsafe_allow_html=True
     )
 
-    # Display metrics with emphasis and explanations
-    st.markdown(f"<h3 style='font-size: 24px;'>Volatility: {volatility:.2f}</h3>", unsafe_allow_html=True)
-    st.markdown("**Volatility** measures the price fluctuations of your portfolio. Higher volatility indicates higher risk.")
-    st.markdown("A high volatility (e.g., above 20%) may suggest that your portfolio is exposed to significant price swings, while low volatility (e.g., below 10%) indicates stability.")
-    
-    st.markdown(f"<h3 style='font-size: 24px;'>P/E Ratio: {pe_ratio:.2f}</h3>", unsafe_allow_html=True)
-    st.markdown("**P/E Ratio** (Price-to-Earnings Ratio) helps assess if a stock is over or undervalued based on its earnings.")
-    st.markdown("A high P/E ratio (e.g., above 25) may indicate overvaluation, while a low P/E ratio (e.g., below 15) could suggest undervaluation.")    
-    
-    st.markdown(f"<h3 style='font-size: 24px;'>Sharpe Ratio: {sharpe:.2f}</h3>", unsafe_allow_html=True)
-    st.markdown("**Sharpe Ratio** measures risk-adjusted return, helping you understand how much excess return you receive for the extra volatility.")
-    st.markdown("A Sharpe Ratio above 1 is generally considered good, while below 1 may indicate that the returns are not worth the risk.")
-    
+    # Display metrics with emphasis and flair
+    st.markdown(
+        f"""
+        <div style="display: flex; justify-content: center; align-items: flex-start; gap: 40px; margin-bottom: 20px;">
+            <div style="text-align: center;">
+                <span style="font-size: 40px; font-weight: bold; color: #1f77b4;">{volatility:.2f}</span><br>
+                <span style="font-size: 16px;">Volatility</span>
+                <div style="font-size: 14px; color: #444;">Measures price fluctuations. Higher means more risk.<br>
+                Less than 10: Stable | Greater than 20: Risky</div>
+            </div>
+            <div style="text-align: center;">
+                <span style="font-size: 40px; font-weight: bold; color: #1f77b4;">{pe_ratio:.2f}</span><br>
+                <span style="font-size: 16px;">P/E Ratio</span>
+                <div style="font-size: 14px; color: #444;">Assesses valuation based on earnings.<br>
+                Less than 15: Undervalued | Greater than 20: Overvalued</div>
+            </div>
+            <div style="text-align: center;">
+                <span style="font-size: 40px; font-weight: bold; color: #1f77b4;">{sharpe:.2f}</span><br>
+                <span style="font-size: 16px;">Sharpe Ratio</span>
+                <div style="font-size: 14px; color: #444;">Risk-adjusted return. Above 1 is good.<br>
+                Less than 1: Poor | 1-2: Good | Greater than 2: Excellent</div>
+            </div>
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
 else:
     if not st.session_state.holdings:
         st.info("No holdings to analyze.")
 
-# # Add a footnote at the bottom of the app
-# st.markdown("---")
-# st.markdown("Made by Adam Neber &middot; [Website](https://aneber20.github.io/)")
