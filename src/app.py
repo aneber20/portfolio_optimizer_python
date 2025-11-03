@@ -7,7 +7,8 @@ if 'holdings' not in st.session_state:
     st.session_state.holdings = {}
 
 # Set the title of the Streamlit app
-st.title('Portfolio Analyzer')
+st.title('GainSight')
+st.header("At-a-glance stock portfolio analysis")
 
 # Section to add a new stock to the portfolio
 st.subheader('Add Stock to Portfolio')
@@ -64,7 +65,7 @@ if st.button("Done Adding Holdings"):
 
 if st.session_state.get("show_analytics", False) and st.session_state.holdings:
     
-    st.subheader("Portfolio Analytics")
+    
     tickers = list(st.session_state.holdings.keys())
     amounts = list(st.session_state.holdings.values())
     
@@ -105,6 +106,7 @@ if st.session_state.get("show_analytics", False) and st.session_state.holdings:
         """,
         unsafe_allow_html=True
     )
+    st.subheader("Portfolio Analytics")
 
     # Display metrics with emphasis and flair
     st.markdown(
