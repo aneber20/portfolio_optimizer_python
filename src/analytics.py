@@ -4,6 +4,49 @@ import numpy as np
 import pandas as pd
 import yfinance as yf
 
+
+def normalize_ticker(ticker: str) -> str:
+    """Return a consistently formatted ticker symbol."""
+    return ticker.strip().upper()
+
+
+def set_holding_value(tickers_and_holdings: dict, ticker: str, amount: float) -> dict:
+    """
+    Add a holding or update an existing holding's dollar value.
+
+    Parameters:
+    tickers_and_holdings: dict
+        Format: {'AAPL': 10000, 'MSFT': 5000, ...}
+    ticker: str
+        Stock ticker symbol.
+    amount: float
+        Dollar value of the holding. Must be greater than 0.
+    """
+    ticker = normalize_ticker(ticker)
+    amount = float(amount)
+
+    if not ticker:
+        raise ValueError("Ticker is required")
+    if amount <= 0:
+        raise ValueError("Amount must be greater than 0")
+
+    tickers_and_holdings[ticker] = amount
+    return tickers_and_holdings
+
+
+def remove_holding(tickers_and_holdings: dict, ticker: str) -> bool:
+    """
+    Remove a holding from the portfolio.
+
+    Returns True if the ticker was removed, or False if it was not present.
+    """
+    ticker = normalize_ticker(ticker)
+    if ticker in tickers_and_holdings:
+        del tickers_and_holdings[ticker]
+        return True
+    return False
+
+
 # Volatility measure
 def calculate_portfolio_volatility(tickers_and_holdings) -> float:
     """
@@ -201,4 +244,3 @@ def fetch_portfolio_returns(periods: list[str], tickers_and_holdings: dict) -> d
         else:
             returns[p] = None
     return returns
-

@@ -1,6 +1,14 @@
 import streamlit as st
 import yfinance as yf
-from analytics import calculate_portfolio_volatility, calculate_portfolio_pe_ratio, calculate_52_week_return, calculate_sharpe_ratio, fetch_sp500_returns, fetch_portfolio_returns
+from analytics import (
+    calculate_portfolio_volatility,
+    calculate_portfolio_pe_ratio,
+    calculate_sharpe_ratio,
+    fetch_sp500_returns,
+    fetch_portfolio_returns,
+    remove_holding,
+    set_holding_value,
+)
 
 # Initialize session state to store holdings if it doesn't exist
 if 'holdings' not in st.session_state:
@@ -34,7 +42,7 @@ if st.button('Add Stock'):
                 st.error(f"No data found for ticker {ticker}")
             else:
                 # Add valid ticker and amount to holdings
-                st.session_state.holdings[ticker] = amount
+                set_holding_value(st.session_state.holdings, ticker, amount)
                 st.success(f"Added {ticker} with amount ${amount:,.2f} to holdings")
         except Exception as e:
             # Show error if yfinance fails
@@ -55,6 +63,32 @@ if st.session_state.holdings:
         "Ticker": [row[0] for row in holdings_data],
         "Amount": [row[1] for row in holdings_data]
     })
+
+    st.subheader("Manage Holdings")
+    selected_ticker = st.selectbox("Select Holding", list(st.session_state.holdings.keys()))
+    updated_amount = st.number_input(
+        "New Dollar Amount",
+        min_value=0.0,
+        value=float(st.session_state.holdings[selected_ticker]),
+        step=100.0,
+    )
+    manage_col1, manage_col2 = st.columns(2)
+
+    with manage_col1:
+        if st.button("Update Holding"):
+            try:
+                set_holding_value(st.session_state.holdings, selected_ticker, updated_amount)
+                st.success(f"Updated {selected_ticker} to ${updated_amount:,.2f}")
+            except ValueError as e:
+                st.warning(str(e))
+
+    with manage_col2:
+        if st.button("Remove Holding"):
+            if remove_holding(st.session_state.holdings, selected_ticker):
+                st.success(f"Removed {selected_ticker} from holdings")
+                st.rerun()
+            else:
+                st.warning(f"{selected_ticker} is not in holdings")
 else:
     # Info message if no holdings
     st.info("No holdings added yet")
@@ -137,4 +171,3 @@ if st.session_state.get("show_analytics", False) and st.session_state.holdings:
 else:
     if not st.session_state.holdings:
         st.info("No holdings to analyze.")
-
